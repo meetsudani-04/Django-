@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        form {
+            max-width: 400px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <form action="#" method="post">
+      {% csrf_token %}
+        <label for="first_name">First Name:</label>
+        <input type="text" id="first_name" name="first_name" value="{{ employee_obj.first_name }}" required>
+
+        <label for="last_name">Last Name:</label>
+        <input type="text" id="last_name" name="last_name" value="{{ employee_obj.last_name }}" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ employee_obj.email }}" required>
+
+        <label for="phone">Phone:</label>
+        <input type="number" id="phone" name="phone" value="{{ employee_obj.phone }}" required>
+
+        <label for="doj">Date of Joining:</label>
+        <input type="date" id="doj" name="doj" value="{{ employee_obj.doj }}" required>
+
+        <label for="dept">dept:</label>
+        <select class="form-select" id="dept" name="dept">
+            {% for dept in dept_obj %}
+                <option value="{{ dept.id }}" {% if selected_dept_id == dept.id %}selected{% endif %}> {{ dept.name }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Submit</button>
+        <span>{{error}}</span>
+    </form>
+</body>
+</html>

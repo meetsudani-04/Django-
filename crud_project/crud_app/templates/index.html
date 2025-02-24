@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+		<meta charset="UTF-8">
+		<title>Index</title>
+		<style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+<h1>CRUD OPPRESSION</h1>
+<h2>Employee List</h2>
+<form action="{% url 'hello' %}" method="GET">
+{% csrf_token %}
+		<label>Search:</label>
+		<input type="text" id="search_first_name" name="search_first_name" value="{{search_first_name}}">
+		<button type="submit">Submit</button>
+</form>
+<table>
+		<thead>
+		<tr>
+				<th>First Name</th>
+				<th>Last Name</th>
+				<th>Email</th>
+				<th>Phone</th>
+				<th>Date of Joining</th>
+				<th>DEPT</th>
+				<th>Action</th>
+		</tr>
+		</thead>
+		<tbody>
+		{% for employee in employee_obj %}
+		<tr>
+				<td>{{ employee.first_name }}</td>
+				<td>{{ employee.last_name }}</td>
+				<td>{{ employee.email }}</td>
+				<td>{{ employee.phone }}</td>
+				<td>{{ employee.doj }}</td>
+				<td>{{ employee.dept.name }}</td>
+				<td>
+						<a href="{% url 'edit' employee.id %}" title="edit" >Edit</a> ||
+						<a href="{% url 'delete' employee.id %}" title="delete" >Delete</a>
+				</td>
+		</tr>
+		{% endfor %}
+		</tbody>
+</table>
+<a href="{% url 'add' %}">ADD</a>
+<br>
+<table>
+		<thead>
+		<tr>
+				<th>Name</th>
+				<th>Action</th>
+		</tr>
+		</thead>
+		<tbody>
+		{% for dept in dept_obj %}
+		<tr>
+				<td>{{ dept.name }}</td>
+				<td>
+						<a href="{% url 'edit_dept' dept.id %}" title="edit" >Edit</a> ||
+						<a href="{% url 'delete_dept' dept.id %}" title="delete" >Delete</a>
+
+				</td>
+		</tr>
+		{% endfor %}
+		</tbody>
+</table>
+<a href="{% url 'add_dept' %}">ADD DEPT</a>
+</body>
+</html>
