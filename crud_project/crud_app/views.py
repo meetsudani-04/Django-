@@ -1,3 +1,5 @@
+import random
+from traceback import print_tb
 
 from django.conf import settings
 from django.contrib import messages
@@ -6,7 +8,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.shortcuts import render, redirect
 
-from .models import Crud_Model, Dept_model
+from .models import Crud_Model, Dept_model, UserOTP
 
 
 # Create your views here.
@@ -173,17 +175,28 @@ def forget_password_views(request):
     context = {}
     if request.method == "POST":
         email = request.POST["email"]
-        user = User.objects.filter(email=email).exists()
+        user = User.objects.filter(email=email).first()
         print(user)
         if user:
-            return redirect(f"/otp-verify?email={email}")
+            otp = random.randint(100000, 999999)
+            user_otp = UserOTP(
+                user = user,
+                otp = otp
+            )
+            user_otp.save()
+            print(otp)
+            return redirect(f"/otp-verify?uid={user.id}")
         else:
             messages.error(request,"Email not found. Please enter a registered email.")
     return render(request, template_name, context)
 
 def otp_verify_views(request):
     template_name = "otp-verify.html"
-    context = {}
+    uid =request.GET["uid"]
+    user_otp_obj = UserOTP.objects.filter(user_id=uid).first()
+    print(user_otp_obj)
+    context = {"uid":uid}
+
     if request.method == "POST":
         first = request.POST.get("first")
         second = request.POST.get("second")
@@ -193,16 +206,26 @@ def otp_verify_views(request):
         sixth = request.POST.get("sixth")
 
         entered_otp = f"{first}{second}{third}{fourth}{fifth}{sixth}"
-        if entered_otp == "123456":
+        if entered_otp == user_otp_obj.otp:
+            user_otp_obj.delete()
+            request.session["uid"] = uid
             return redirect("/reset-password")
         else:
             messages.error(request,"Invalid OTP. Please try again.")
-
-
         print(entered_otp)
     return render(request, template_name, context)
 
 def reset_password_views(request):
     template_name = "reset-password.html"
-    context = {}
+    uid = request.session["uid"]
+    user = User.objects.filter(id=uid).first()
+    context = {"uid":uid}
+
+    if request.method == "POST":
+        new_password = request.POST.get("new_password")
+        if user:
+            user.set_password(new_password)
+            user.save()
+            del request.session["uid"]
+        return redirect("/login")
     return render(request, template_name, context)
